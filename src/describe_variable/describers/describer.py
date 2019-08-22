@@ -37,7 +37,32 @@ def describe(v: any,
              print_components_max=DEFAULT_PRINT_COMPONENTS_MAX) -> None:
 
     desc = Describer(spaces, print_values, print_components_types, print_components_max)
-    desc.describe_var(v, depth, indent)
+    print(desc.describe_var(v, depth, indent))
+
+
+def get_description(v: any,
+                    depth=DEFAULT_DEPTH,
+                    indent=DEFAULT_INDENT,
+                    spaces=DEFAULT_SPACES,
+                    print_values=DEFAULT_PRINT_VALUES,
+                    print_components_types=DEFAULT_PRINT_COMPONENTS_TYPE,
+                    print_components_max=DEFAULT_PRINT_COMPONENTS_MAX) -> str:
+    desc = Describer(spaces, print_values, print_components_types, print_components_max)
+    return desc.describe_var(v, depth, indent)
+
+
+def diff(v1: any, v2: any,
+         depth=DEFAULT_DEPTH,
+         indent=DEFAULT_INDENT,
+         spaces=DEFAULT_SPACES,
+         print_values=DEFAULT_PRINT_VALUES,
+         print_components_types=DEFAULT_PRINT_COMPONENTS_TYPE,
+         print_components_max=DEFAULT_PRINT_COMPONENTS_MAX) -> str:
+    from difflib import ndiff
+    desc = Describer(spaces, print_values, print_components_types, print_components_max)
+    description_v1 = desc.describe_var(v1, depth, indent)
+    description_v2 = desc.describe_var(v2, depth, indent)
+    print(''.join(ndiff(description_v1.splitlines(1), description_v2.splitlines(1))))
 
 
 class Describer:
@@ -55,30 +80,34 @@ class Describer:
                      depth=DEFAULT_DEPTH,
                      indent=DEFAULT_INDENT,
                      ) -> None:
+        res = ''
         if isinstance(v, dict) or isinstance(v, list):
-            self.describe_object(v, depth=depth-1, indent=indent +
-                                 1)
+            res += self.describe_object(v, depth=depth-1, indent=indent +
+                                        1)
         else:
             if self.print_values:
-                print(str(v) + ", ", end='')
-            print("type: " + type(v).__name__)
+                res += str(v) + ", "
+            res += "type: " + type(v).__name__ + "\n"
+        return res
 
     def describe_object(self, d: Union[dict, list],
                         depth: int = DEFAULT_DEPTH,
                         indent=DEFAULT_INDENT,
                         ) -> None:
+        res = ''
         dtype = type(d)
         if dtype is dict or dtype is list:
-            print("type: " + type(d).__name__ + ", size: " + str(len(d)), end='')
+            res += "type: " + type(d).__name__ + ", size: " + str(len(d))
             if self.print_components_types:
-                print(", components: " + type_of_components(d))
+                res += ", components: " + type_of_components(d) + "\n"
             if depth >= 0:
                 rng = range(0, len(d)) if dtype is list else list(d.keys())
                 for idx in rng:
                     if rng.index(idx) >= self.print_components_max:
-                        print(get_indent(self.spaces, indent) + "...")
+                        res += get_indent(self.spaces, indent) + "...\n"
                         break
-                    print(get_indent(self.spaces, indent) + str(idx) + " -> ", end=' ')
-                    self.describe_object(d[idx], depth=depth-1, indent=indent + 1)
+                    res += get_indent(self.spaces, indent) + str(idx) + " -> "
+                    res += self.describe_object(d[idx], depth=depth-1, indent=indent + 1)
         else:
-            self.describe_var(d, depth=depth-1, indent=indent + 1)
+            res += self.describe_var(d, depth=depth-1, indent=indent + 1)
+        return res
