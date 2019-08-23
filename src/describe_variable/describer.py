@@ -1,27 +1,13 @@
 from typing import Union
+from .helpers import type_of_components
+
+START_INDENT = -1
 
 DEFAULT_DEPTH = 0
 DEFAULT_SPACES = 4
-DEFAULT_INDENT = -1
 DEFAULT_PRINT_VALUES = True
 DEFAULT_PRINT_COMPONENTS_MAX = 4
 DEFAULT_PRINT_COMPONENTS_TYPE = True
-
-
-def type_of_components(obj: Union[dict, list]) -> str:
-    if isinstance(obj, list):
-        indices = list(range(0, len(obj)))
-        first_type = type(obj[indices[0]])
-    elif isinstance(obj, dict):
-        indices = list(obj.keys())
-        first_type = type(obj[indices[0]])
-    else:
-        raise TypeError(str(obj) + " must be a list or a dict")
-
-    if all(isinstance(obj[idx], first_type) for idx in indices):
-        return first_type.__name__
-    else:
-        return 'mixed'
 
 
 def get_indent(spaces, indent):
@@ -30,38 +16,41 @@ def get_indent(spaces, indent):
 
 def describe(v: any,
              depth=DEFAULT_DEPTH,
-             indent=DEFAULT_INDENT,
              spaces=DEFAULT_SPACES,
              print_values=DEFAULT_PRINT_VALUES,
              print_components_types=DEFAULT_PRINT_COMPONENTS_TYPE,
              print_components_max=DEFAULT_PRINT_COMPONENTS_MAX) -> None:
-
+    """
+    Print the description of a variable.
+    :param v: the variable to be described.
+    :param depth: sets the depth of the description (for dicts).
+    :param indent: sets the indent of the output.
+    :param spaces: sets the number of spaces of the indent.
+    """
     desc = Describer(spaces, print_values, print_components_types, print_components_max)
-    print(desc.describe_var(v, depth, indent))
+    print(desc.describe_var(v, depth, indent=START_INDENT))
 
 
 def get_description(v: any,
                     depth=DEFAULT_DEPTH,
-                    indent=DEFAULT_INDENT,
                     spaces=DEFAULT_SPACES,
                     print_values=DEFAULT_PRINT_VALUES,
                     print_components_types=DEFAULT_PRINT_COMPONENTS_TYPE,
                     print_components_max=DEFAULT_PRINT_COMPONENTS_MAX) -> str:
     desc = Describer(spaces, print_values, print_components_types, print_components_max)
-    return desc.describe_var(v, depth, indent)
+    return desc.describe_var(v, depth, indent=START_INDENT)
 
 
 def diff(v1: any, v2: any,
          depth=DEFAULT_DEPTH,
-         indent=DEFAULT_INDENT,
          spaces=DEFAULT_SPACES,
          print_values=DEFAULT_PRINT_VALUES,
          print_components_types=DEFAULT_PRINT_COMPONENTS_TYPE,
          print_components_max=DEFAULT_PRINT_COMPONENTS_MAX) -> str:
     from difflib import ndiff
     desc = Describer(spaces, print_values, print_components_types, print_components_max)
-    description_v1 = desc.describe_var(v1, depth, indent)
-    description_v2 = desc.describe_var(v2, depth, indent)
+    description_v1 = desc.describe_var(v1, depth, indent=START_INDENT)
+    description_v2 = desc.describe_var(v2, depth, indent=START_INDENT)
     print(''.join(ndiff(description_v1.splitlines(1), description_v2.splitlines(1))))
 
 
@@ -78,7 +67,7 @@ class Describer:
 
     def describe_var(self, v: any,
                      depth=DEFAULT_DEPTH,
-                     indent=DEFAULT_INDENT,
+                     indent=START_INDENT,
                      ) -> None:
         res = ''
         if isinstance(v, dict) or isinstance(v, list):
@@ -92,7 +81,7 @@ class Describer:
 
     def describe_object(self, d: Union[dict, list],
                         depth: int = DEFAULT_DEPTH,
-                        indent=DEFAULT_INDENT,
+                        indent=START_INDENT,
                         ) -> None:
         res = ''
         dtype = type(d)
