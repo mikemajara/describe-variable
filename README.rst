@@ -5,15 +5,19 @@ describe-variable
 
 Describe variables in python. Most useful for complex dicts or arrays.
 
-==========
-Motivation
-==========
-
+Motivation:
 Provide simple methods that describe variables (mainly dicts) and allows to find small differences in highly nested objects.
 
+Install:
+
+.. code-block:: bash
+
+    pip install describe-variable
 
 
-Example:
+=======
+Example
+=======
 
 .. code-block:: python
     
