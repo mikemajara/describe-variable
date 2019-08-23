@@ -14,46 +14,6 @@ def get_indent(spaces, indent):
     return (" " * spaces * indent)
 
 
-def describe(v: any,
-             depth=DEFAULT_DEPTH,
-             spaces=DEFAULT_SPACES,
-             print_values=DEFAULT_PRINT_VALUES,
-             print_components_types=DEFAULT_PRINT_COMPONENTS_TYPE,
-             print_components_max=DEFAULT_PRINT_COMPONENTS_MAX) -> None:
-    """
-    Print the description of a variable.
-    :param v: the variable to be described.
-    :param depth: sets the depth of the description (for dicts).
-    :param indent: sets the indent of the output.
-    :param spaces: sets the number of spaces of the indent.
-    """
-    desc = Describer(spaces, print_values, print_components_types, print_components_max)
-    print(desc.describe_var(v, depth, indent=START_INDENT))
-
-
-def get_description(v: any,
-                    depth=DEFAULT_DEPTH,
-                    spaces=DEFAULT_SPACES,
-                    print_values=DEFAULT_PRINT_VALUES,
-                    print_components_types=DEFAULT_PRINT_COMPONENTS_TYPE,
-                    print_components_max=DEFAULT_PRINT_COMPONENTS_MAX) -> str:
-    desc = Describer(spaces, print_values, print_components_types, print_components_max)
-    return desc.describe_var(v, depth, indent=START_INDENT)
-
-
-def diff(v1: any, v2: any,
-         depth=DEFAULT_DEPTH,
-         spaces=DEFAULT_SPACES,
-         print_values=DEFAULT_PRINT_VALUES,
-         print_components_types=DEFAULT_PRINT_COMPONENTS_TYPE,
-         print_components_max=DEFAULT_PRINT_COMPONENTS_MAX) -> str:
-    from difflib import ndiff
-    desc = Describer(spaces, print_values, print_components_types, print_components_max)
-    description_v1 = desc.describe_var(v1, depth, indent=START_INDENT)
-    description_v2 = desc.describe_var(v2, depth, indent=START_INDENT)
-    print(''.join(ndiff(description_v1.splitlines(1), description_v2.splitlines(1))))
-
-
 class Describer:
     def __init__(self,
                  spaces=DEFAULT_SPACES,
