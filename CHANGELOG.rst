@@ -2,7 +2,12 @@
 Changelog
 =========
 
-Version 0.1
+Version 0.1.3
+===========
+
+- FIX: nasty bug #2 fixed
+
+Version 0.1.0
 ===========
 
 - Feature A added
