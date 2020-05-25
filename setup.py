@@ -22,4 +22,5 @@ except VersionConflict:
 if __name__ == "__main__":
     setup(
         use_pyscaffold=True,
+        version='v0.1.3'
     )
